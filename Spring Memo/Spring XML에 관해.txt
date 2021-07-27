@@ -1,0 +1,101 @@
+
+(인젝션은 3가지 setter,constructor,기본생성자)
+	Autowired: 자동으로 bean을 찾아서 세팅해줌.
+	사용시에는 context:annotation-configが必要
+	動作の原理は자료형(Exam)을 찾고 名前で(exam)探す。
+	
+	required: xml에 객체가없어도 null값으로 진행함.
+	
+	Qualifier: 複数のbeanがある時idで見つけないため、
+	idと一致するもの見つけ出して設定する
+	
+순서: 타입 -> 이름 -> qualifer
+-----------------------------------------------Component---------------------------------------------------
+@Component("console") 는 이하와 같음.
+<bean id="console" class="spring.di.ui.InlineExamConsole">
+-----------------------------------------------------------------------------------------------------------
+
+ 
+		네임스페이스= p는 약어 주소는 플레임.
+		이름을 식별하기 위해 쓰는것이 네임스페이스
+	 
+--------------------------------------------------bean------------------------------------------------------
+	Exam exam = new NewlecExam(); bean이라는 객체를 만듬.
+	<bean id="exam1" class="spring.di.entity.NewlecExam" p:kor="10" p:eng="20" p:math="30" p:com="40" />
+		----------------------------------------constructo---------------------------------------------------
+	 	index순서가 바껴도 괜찮음. 이 순서는 필드 변수의 순서 
+		<constructor-arg name="kor" type="int" value="10"/>
+		<constructor-arg index="1" type="int" value="20"/>
+		constructo-arg는 순서대로 값을 set해줌. 밑에 방법과 기능이 같음. 
+
+		---------------------------------------property로 설정하기------------------------------------------------
+		 <property name="kor">
+			<value>10</value>
+		</property>
+		<property name="eng" value="10" />
+		
+		ExamConsole console = new GridExamConsole();
+		<bean id="console" class="spring.di.ui.InlineExamConsole">
+			Ex) console.setExam(exam);
+			<property name="exam" ref="exam" />
+			*property의 Value 또는 Ref = bean id 가 들어감 setter함수가 없으면 에러남.
+		</bean>
+--------------------------------------------------<List>--------------------------------------------------
+	<util:list id="exams" list-class="java.util.ArrayList">
+		<bean class="spring.di.entity.NewlecExam" p:kor="1" p:eng="20"/>
+		<ref bean="exam" />
+	</util:list>
+	
+	List<Exam> exams = new ArrayList<Exam>()
+	<bean id="exams" class="java.util.ArrayList">
+		<constructor-arg>
+			<list>
+				直接に作る方法
+				<bean class="spring.di.entity.NewlecExam" p:kor="1" p:eng="20"/>
+				既にある beanを参照して作る
+				<ref bean="exam" />
+			</list>
+		</constructor-arg>
+	</bean>
+-----------------------------------------------------------------------------------------------------------
+
+
+-----------------------------------------------Main JavaClass----------------------------------------------
+	
+		  스프링에게 지시하는방법으로 코드를 변경 
+		  Exam exam = new NewlecExam(); 
+		  ExamConsole console = new GridExamConsole();
+		 
+		  console.setExam(exam);
+		 
+		ApplicationContext context = new ClassPathXmlApplicationContext("spring/di/setting.xml");
+
+		
+		  ExamConsole console = (ExamConsole) context.getBean("console");
+		  xml에bean으로 설정해둔 값을 달라고 getBean요청 이름만가지고오면 어떠한 객체인지 알수없으므로캐스팅을 해줘야함.
+		 
+		Exam이라는 클래스를 가져옴.
+		Exam exam = context.getBean(Exam.class);
+		System.out.println(exam.toString());
+		Examconsole이라는 형식의 class 타입에 맞는 놈을 갖고옴. 만약 인터페이스라면 인터페이스를 가져옴.
+		
+		 	@Component Error남 ExamConsole형식으로 찾는게 아닌 console이름으로 찾기때문.
+		 	만약 이름으로 찾고싶을땐 @Component("console")이름을 붙혀줘야함.
+		 
+		ExamConsole console = (ExamConsole)context.getBean("console");
+		ExamConsole console = (ExamConsole)context.getBean("ExamConsole.class");
+		
+		----------------------------------------------<List사용하기>---------------------------------------------
+		setting.xml에서 exams라는 이름으로 가져옴
+		List<Exam> exams = (List<Exam>) context.getBean("exams"); //new ArrayList<>()
+		exams.add(new NewlecExam(1,1,1,1));
+		
+		for(Exam a: exams) {
+			System.out.println(a);
+		}
+		------------------------------------------------------------------------------------------------
+의미를 확실하게 부여하기위해 사용하는 어노테이션이 Component
+Service <- [Entity] -> Repository(DAO)
+Model과Entity는 컴포넌트를 사용하지않음
+소스코드를 갖고있지않으면 컴포넌트를 붙히는게 불가능.
+

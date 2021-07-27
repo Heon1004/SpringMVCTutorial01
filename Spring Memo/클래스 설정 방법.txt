@@ -1,0 +1,7 @@
+AnnotationConfigApplicationContext ctx = new AnnotationConfigApplicationContext();
+ctx.register(Appconfig.class,OtherConfig.class);
+ctx.refresh();
+ExamConsole console = (ExamConsole) context.getBean("console");
+console.print();
+refresh()함수를  호출하면 설정되어있는 내용들을 다시 읽어들여
+IOC컨테이너에 담겨진 객체들을 활용가능.

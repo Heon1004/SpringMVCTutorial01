@@ -1,0 +1,87 @@
+------------------------------------------pom.xml-----------------------------------
+밑은 jsp를 사용하기위해 적어야함.
+	<dependencies>
+		<!-- https://mvnrepository.com/artifact/org.apache.tomcat/tomcat-api -->
+		<dependency>
+			<groupId>org.apache.tomcat</groupId>
+			<artifactId>tomcat-api</artifactId>
+			<version>9.0.50</version>
+		</dependency>
+	</dependencies>
+	사용할 자바 버전등록 적은후에 프로젝트 -> maven -> project update
+	<properties>
+		<maven.compiler.source>16</maven.compiler.source>
+		<maven.compiler.target>16</maven.compiler.target>
+	</properties>
+--------------------------------------------------------------------------------------
+
+Spring MVC를 사용하기위해선 Spring Dispatcher를 Front컨트롤러로 설정하기.
+스프링MVC라는 라이브러리를 설정해야함.
+Dependencies 탭에서 org.springframework.spring-webmvc 검색
+Maven Dependencies/spring-webmvc/org.springframwork.web.servlet/DispatcherServlet
+Copy Qualified Name하면 클래스명,패키지명을 한번에 가져옴
+이후 webapp/WEB-INF의 web.xml에서 붙여넣기 후 확장자명을 지워주면 됌.
+
+------------------------------------------web.xml---------------------------------------
+	<servlet>
+		<!-- name은 사용하고싶은 이름으로 프론트컨트롤러 지정 -->
+		<servlet-name>dispatcher</servlet-name>
+		<servlet-class>org.springframework.web.servlet.DispatcherServlet</servlet-class>
+	</servlet>
+	<servlet-mapping>
+		<!-- Front컨트롤이므로 루트를 설정하는 모든 URL을 받음 -->
+		<servlet-name>dispatcher</servlet-name>
+		<!-- *를 붙혀주면서 예외없이 모든걸 프론트컨트롤로 다 받게하겠다라는 뜻 -->
+		<url-pattern>/*</url-pattern>
+	</servlet-mapping>
+---------------------------------------------------------------------------------------
+
+이후에 WEB-INF안에 xml파일을 만들어주면 됌 만들시에 *-servlet.xml로 이름을 지어주면 됌.
+*에 들어가는 이름은 <서블릿>의 <servlet-name>으로 지정해주어야함.
+
+*-servlet.xml에 스프링이 사용할수있는 설정들을 맵핑정보를 넣어줘야함
+스프링회사에서 제공하는 래퍼런스를 가져와야함.
+docs.spring.io/spring-framework/docs/
+ spring-framework-ref... -> Core -> Configuration Metadata 목차에서
+beans내용을 복사(xml코드는 복사 할 필요가 없음)
+
+-------------------------------------------*-servlet.xml-----------------------------------
+<beans xmlns="http://www.springframework.org/schema/beans"
+    xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+    xsi:schemaLocation="http://www.springframework.org/schema/beans
+        https://www.springframework.org/schema/beans/spring-beans.xsd">
+<bean id="URL" class="package.class">  
+        <!-- collaborators and configuration for this bean go here -->
+</bean>
+
+--------------------------------------------------------------------------------
+이후 자바클래스로 컨트롤러를 만듬.
+---------------------------------indexController -------------------------------
+public class indexController implements Controller{
+
+	//스프링이 Dispatcher 하기위해 ModelAndView를 줌. 이 클래스에서는 Dispatcher기능이 없음
+	@Override
+	public ModelAndView handleRequest(HttpServletRequest request, HttpServletResponse response) throws Exception {
+		
+		ModelAndView mv = new ModelAndView();
+		// data는 변수명을 뜻 함
+		mv.addObject("data","Hello Spring MVC");
+		//output jsp name
+		mv.setViewName("index.jsp");
+		
+		return mv;
+	}
+
+----------------------------------------------------------------------------------
+
+<url-pattern>/*</url-pattern>에 *이 있어서 index.jsp의 주소를 찾지못하는 404에러 발생
+*을 지우고 /만 했을경우 사용자가 view페이지를 직접 요청 할 수 있게됌.
+그러므로 WEB-INF에 view를 넣음.
+
+----------------------------------index페이지를 간단하게 요청하기----------------------------------
+Project-Properties-Web Content Setting에서 Context root내용을 / 로 바꾸고
+서버에서 서버 하위디렉토리에 존재하는 해당 프로젝트를 삭제하면 한 뒤에
+webapp에 index라는 빈 파일을 넣음 그러면 localhost/index요청하였을시 컨트롤러에서 index를 가져옴.
+
+이클립스는 웹루트에있는 특정파일을 선택하고 실행하면 파일명을 브라우저의 경로에 써 주는데
+컨트롤러에 맵핑했던 주소랑 똑같기때문에 컨트롤러의 URL로 Dispatcher됌.

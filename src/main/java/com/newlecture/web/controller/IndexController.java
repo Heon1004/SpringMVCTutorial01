@@ -14,7 +14,8 @@ public class IndexController implements Controller{
 		System.out.println("---------------------------------------------이게 실행이되는걸까..-------------------------");
 		ModelAndView mv = new ModelAndView();
 		mv.addObject("data","Hello Spring MVC");
-		mv.setViewName("/WEB-INF/view/index");
+		
+		mv.setViewName("index");
 		
 		return mv;
 	}
