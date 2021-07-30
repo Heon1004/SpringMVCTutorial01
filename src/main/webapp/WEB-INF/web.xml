@@ -4,16 +4,52 @@
 	xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
 	xsi:schemaLocation="http://xmlns.jcp.org/xml/ns/javaee http://xmlns.jcp.org/xml/ns/javaee/web-app_4_0.xsd"
 	version="4.0" metadata-complete="true">
+	<!-- 
+		리스너란 톰캣 또는 세션 시작될때 끝날때 이벤트를 처리해주는 기능 
+		DispatcherServlet가 ContextLoader를 사용할수있음
+		즉 하단의 context-param을 가져다쓸수있음.
+	-->
+	<listener>
+		<listener-class>org.springframework.web.context.ContextLoaderListener</listener-class>
+	</listener>
+	<context-param>
+		<param-name>contextConfigLocation</param-name>
+		<param-value>
+			/WEB-INF/spring/service-context.xml
+			/WEB-INF/spring/security-context.xml
+		</param-value>
+	</context-param>
 	
+	<!-- 
+		servlet의 실행 순서 또는 서블릿이 메모리에 올라가는 순서.
+		모든 서블릿은 url이 맵핑되어 있고 첫번째 요청이 왔을때 메모리에 올라감.
+		밑의 서블렛은 설정을 다루고있어서 요청이 올때 메모리에 올라가면 첫 요청에서는 속도가 느림
+		그래서 load-on-startup를 넣어줌.
+	 -->
 	<servlet>
 		<servlet-name>dispatcher</servlet-name>
 		<servlet-class>org.springframework.web.servlet.DispatcherServlet</servlet-class>
+		<init-param>
+			<param-name>contextConfigLocation</param-name>
+			<param-value>/WEB-INF/spring/servlet-context.xml</param-value>
+		</init-param>
+		<!-- load-on = Tomcat 안에는 우선순위(숫자) -->
+		<load-on-startup>1</load-on-startup>
+		<!-- 비동기적으로 로드시킴 -->
+		<async-supported>true</async-supported>
 	</servlet>
 	<servlet-mapping>
 		<!-- Front컨트롤이므로 루트를 설정하는 모든 URL을 받음 -->
 		<servlet-name>dispatcher</servlet-name>
 		<url-pattern>/</url-pattern>
 	</servlet-mapping>
+	
+	<resource-ref>
+		<description>mysql connection</description>
+		<res-ref-name>jdbc/mysql</res-ref-name>
+		<res-type>javax.sql.DataSource</res-type>
+		<res-auth>Container</res-auth>
+	</resource-ref>
 	
 	<display-name>Welcome to Tomcat</display-name>
 	<description>

@@ -13,16 +13,4 @@
     	https://www.springframework.org/schema/mvc/spring-mvc.xsd">
      -->
     
-	<!-- URL요청이 오면 객체화 시킴 -->
-    <bean id="/index" class="com.newlecture.web.controller.IndexController"/>  
-        
-    <!-- 지정해줌으로서 앞 뒤로 url이 매핑됌 -->
-	<bean class="org.springframework.web.servlet.view.InternalResourceViewResolver">
-		<property name="prefix" value="/WEB-INF/view/"></property>
-		<property name="suffix" value=".jsp"></property>
-	</bean>
-	
-	<!-- /static/** 이렇게 되었다고 생각하면됌. location경로 안에 있는 모든 정적파일이 적용됌 -->
-	<mvc:resources location="/static/" mapping="/**"></mvc:resources>
-
 </beans>

@@ -1,0 +1,22 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<beans xmlns="http://www.springframework.org/schema/beans"
+	xmlns:mvc="http://www.springframework.org/schema/mvc"
+    xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+    xsi:schemaLocation="http://www.springframework.org/schema/beans
+    https://www.springframework.org/schema/beans/spring-beans.xsd
+    http://www.springframework.org/schema/mvc
+    https://www.springframework.org/schema/mvc/spring-mvc.xsd">
+    
+    <bean id="noticeService" class="com.newlecture.web.service.jdbc.JDBCNoticeService">
+		<property name="dataSource" ref="datas" />
+	</bean>
+	
+	<bean id="datas" class="org.springframework.jdbc.datasource.DriverManagerDataSource">
+		<!-- name은 정해져있음 클레스의 setter명 -->
+		<property name="driverClassName" value="com.mysql.cj.jdbc.Driver" />
+		<property name="url" value="jdbc:mysql://localhost:3306/newlec?serverTimezone=UTC" />
+		<property name="username" value="root" />
+		<property name="password" value="1041" />
+	</bean>
+    
+</beans>
